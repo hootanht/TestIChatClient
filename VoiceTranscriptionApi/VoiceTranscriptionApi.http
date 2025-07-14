@@ -1,0 +1,71 @@
+@VoiceTranscriptionApi_HostAddress = http://localhost:5153
+@ApiToken = your-api-token-here
+
+### Get API Info
+GET {{VoiceTranscriptionApi_HostAddress}}/swagger/index.html
+Accept: text/html
+
+### Health Check (if available)
+GET {{VoiceTranscriptionApi_HostAddress}}/health
+Accept: application/json
+
+### Transcribe Audio File - Valid Token
+POST {{VoiceTranscriptionApi_HostAddress}}/api/transcribe
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{ApiToken}}
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="sample.wav"
+Content-Type: audio/wav
+
+< ./sample-audio.wav
+--boundary--
+
+### Transcribe Audio File - Invalid Token (should return 401)
+POST {{VoiceTranscriptionApi_HostAddress}}/api/transcribe
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer invalid-token
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="sample.wav"
+Content-Type: audio/wav
+
+< ./sample-audio.wav
+--boundary--
+
+### Transcribe Audio File - No Token (should return 401)
+POST {{VoiceTranscriptionApi_HostAddress}}/api/transcribe
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="sample.wav"
+Content-Type: audio/wav
+
+< ./sample-audio.wav
+--boundary--
+
+### Test with different audio formats
+
+### MP3 File
+POST {{VoiceTranscriptionApi_HostAddress}}/api/transcribe
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{ApiToken}}
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="sample.mp3"
+Content-Type: audio/mpeg
+
+< ./sample-audio.mp3
+--boundary--
+
+### M4A File
+POST {{VoiceTranscriptionApi_HostAddress}}/api/transcribe
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{ApiToken}}
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="sample.m4a"
+Content-Type: audio/m4a
+
+< ./sample-audio.m4a
+--boundary--

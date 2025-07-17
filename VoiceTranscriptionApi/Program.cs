@@ -1,34 +1,9 @@
-#pragma warning disable SKEXP0010
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.AI;
-using VoiceTranscriptionApi.Services;
+using VoiceTranscriptionApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var serviceType = builder.Configuration["TranscriptionServiceType"];
-
-if (serviceType == "AzureOpenAI")
-{
-    builder.Services.AddKernel();
-    builder.Services.AddAzureOpenAIChatClient(
-        deploymentName: builder.Configuration["AzureOpenAI:DeploymentName"]!,
-        endpoint: builder.Configuration["AzureOpenAI:Endpoint"]!,
-        apiKey: builder.Configuration["AzureOpenAI:ApiKey"]!
-    );
-    builder.Services.AddScoped<ITranscriptionService, AzureOpenAITranscriptionService>();
-}
-else // Default to Ollama
-{
-    builder.Services.AddOllamaChatClient(
-        endpoint: new Uri(builder.Configuration["Ollama:Endpoint"]!),
-        modelId: builder.Configuration["Ollama:ModelId"]!
-    );
-    builder.Services.AddScoped<ITranscriptionService, OllamaTranscriptionService>();
-}
-
+builder.Services.AddAzureOpenAIServices(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
